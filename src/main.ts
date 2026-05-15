@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 // Use the API key from Vite's define or environment
-const GEMINI_API_KEY = (process.env as any).GEMINI_API_KEY || "";
+const GEMINI_API_KEY = "AIzaSyDi0yRgZGwwwhh5-R1Yv2Om9ViJGkhr6g8";
 
 const video = document.getElementById('video') as HTMLVideoElement;
 const captureTrigger = document.getElementById('capture-trigger') as HTMLButtonElement;
@@ -51,7 +51,8 @@ async function analyzeImage(base64Data: string) {
      return;
   }
 
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const genAI = new GoogleGenAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   try {
     loader.classList.add('active');
@@ -60,17 +61,13 @@ async function analyzeImage(base64Data: string) {
 
     const prompt = "請分析這張照片中的食物，回傳 JSON 格式：{\"foods\": [{\"name\":\"食物名稱\",\"calories\":數字,\"protein\":數字,\"carbs\":數字,\"fat\":數字}], \"total_calories\": 數字}。請確保回傳內容僅包含 JSON 字串，方便解析。使用繁體中文。";
     
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: {
-        parts: [
-          { text: prompt },
-          { inlineData: { data: base64Data, mimeType: 'image/jpeg' } }
-        ]
-      }
-    });
+    const result = await model.generateContent([
+      prompt,
+      { inlineData: { data: base64Data, mimeType: 'image/jpeg' } }
+    ]);
 
-    const rawText = response.text || "";
+    const response = await result.response;
+    const rawText = response.text();
     
     // 嘗試解析 JSON
     let data;
@@ -153,10 +150,12 @@ closeDrawerBtn.addEventListener('click', () => {
   resultDrawer.classList.remove('open');
 });
 
-// PWA
+// 移除 Service Worker 以避免快取導致的畫面不更新
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
   });
 }
 
