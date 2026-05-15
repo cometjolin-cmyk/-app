@@ -480,27 +480,24 @@
          return;
       }
 
-      const genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-      const model = "gemini-1.5-flash";
+      const genAI = new GoogleGenAI(GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       try {
         loader.classList.add('active');
         captureTrigger.style.opacity = '0.5';
         captureTrigger.disabled = true;
 
-        const prompt = "請分析這張照片中的食物，回傳 JSON 格式：{\"foods\": [{\"name\":\"食物名稱\",\"calories\":數字,\"protein\":數字,\"carbs\":數字,\"fat\":數字}], \"total_calories\": 數字}";
+        const prompt = "請分析這張照片中的食物，回傳 JSON 格式：{\"foods\": [{\"name\":\"食物名稱\",\"calories\":數字,\"protein\":數字,\"carbs\":數字,\"fat\":數字}], \"total_calories\": 數字}。請確保回傳內容僅包含 JSON 字串，方便解析。使用繁體中文。";
         
-        const response = await genAI.models.generateContent({
-          model: model,
-          contents: {
-            parts: [
-              { text: prompt },
-              { inlineData: { data: base64Data, mimeType: 'image/jpeg' } }
-            ]
-          }
-        });
+        const result = await model.generateContent([
+          prompt,
+          { inlineData: { data: base64Data, mimeType: 'image/jpeg' } }
+        ]);
 
-        const rawText = response.text;
+        const response = await result.response;
+        const rawText = response.text();
+        
         // 嘗試解析 JSON
         let data;
         try {
