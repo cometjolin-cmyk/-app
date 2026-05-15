@@ -1,0 +1,21 @@
+{
+  "name": "Gemini Scanner",
+  "short_name": "GeminiScanner",
+  "description": "Smart image recognition powered by Gemini 1.5 Flash",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c0d0f",
+  "theme_color": "#00ff88",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4f8.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/512x512/1f4f8.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

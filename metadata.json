@@ -1,0 +1,6 @@
+{
+  "name": "AI 食物熱量辨識",
+  "description": "使用 Gemini 1.5 Flash API 辨識食物並估算熱量與營養成分。",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}
